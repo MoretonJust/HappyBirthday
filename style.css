@@ -1,0 +1,48 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(to bottom, #ffcc00, #ff9900, #aa4c00);
+    overflow: hidden; /* чтобы не было скролла */
+    position: relative; /* для позиционирования конфетти */
+}
+#gg {
+    width: 30%;
+    height: auto; /* изменено для сохранения пропорций */
+    position: fixed; /* Фиксируем позицию картинки */
+    bottom: 0px; /* Отступ от нижнего края */
+    left: 50%; /* Центрируем по горизонтали */
+    transform: translateX(-50%); /* Смещаем влево на 50% ширины, чтобы центрировать */
+    z-index: 0; /* Чтобы картинка была ниже кнопки и конфетти */
+}
+
+#confetti{
+
+	height: 100%;
+	left: 0px;
+	position: fixed;
+	top: 0px;
+	width: 100%;
+	z-index: 1;
+}
+
+#posrcard {
+    width: 50px;
+    height: 60px;
+    position: fixed; /* Чтобы кнопка оставалась на месте при прокрутке */
+    top: 20px; /* Отступ от нижней границы */
+    right: 20px; /* Отступ от правой границы */
+    padding: 10px 20px; /* Отступы внутри кнопки */
+    background-color: #ff9900; /* Цвет фона кнопки */
+    color: white; /* Цвет текста кнопки */
+    border: none; /* Убираем границу */
+    border-radius: 5px; /* Закругленные углы */
+    cursor: pointer; /* Указываем, что это кнопка */
+    z-index: 2; /* Чтобы кнопка была выше конфетти */
+}
+
+#posrcard:hover {
+    background-color: #ffaa00; /* Изменение цвета при наведении */
+}
