@@ -3,16 +3,886 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Праздничный фон</title>
+    <title>Праздничный фон с открытками</title>
+    <style>body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+body.light-effect::before {
+    opacity: 1;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 204, 0, 0.4) 0%, rgba(255, 153, 0, 0.2) 40%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    box-shadow: 0 0 100px rgba(255, 204, 0, 0.3);
+    pointer-events: none;
+}
+
+body.light-effect::after {
+    opacity: 1;
+}
+
+#gg {
+    filter: drop-shadow(0 0 15px rgba(255, 204, 0, 0.7));
+    transition: filter 0.5s ease;
+}
+
+body.light-effect #gg {
+    filter: drop-shadow(0 0 25px rgba(255, 204, 0, 0.9));
+}
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: linear-gradient(to bottom, #ffcc00, #ff9900, #aa4c00);
+        overflow: hidden;
+        position: relative;
+        font-family: 'Arial', sans-serif;
+    }
+    
+    #gg {
+        width: 500px;
+        height: auto;
+        position: fixed;
+        bottom: 0px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 0;
+    }
+
+    #confetti {
+        height: 100%;
+        left: 0px;
+        position: fixed;
+        top: 0px;
+        width: 100%;
+        z-index: 1;
+    }
+
+    #posrcard {
+        width: 100px;
+        height: 100px;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 0;
+        background: url('pic/congrate.png') no-repeat center center;
+        background-size: contain;
+        color: transparent;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 2;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #posrcard:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(255, 255, 0, 0.8), 0 0 20px rgba(255, 255, 0, 0.5);
+    }
+
+    #written {
+        width: 100px;
+        height: 100px;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        padding: 0;
+        background: url('pic/con.png') no-repeat center center;
+        background-size: contain;
+        color: transparent;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 2;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #written:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(255, 255, 0, 0.8), 0 0 20px rgba(255, 255, 0, 0.5);
+    }
+    
+    .card-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        cursor: pointer; /* Курсор указывает, что можно кликнуть */
+    }
+    
+    .card-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .card {
+        background: linear-gradient(135deg, #fff6e6 0%, #fff 100%);
+        width: 600px;
+        max-width: 90%;
+        max-height: 80vh;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 153, 0, 0.5);
+        padding: 20px;
+        position: relative;
+        transform: scale(0.8);
+        opacity: 0;
+        transition: transform 0.4s ease, opacity 0.4s ease;
+        border: 2px solid #ff9900;
+        overflow-y: auto; /* Включаем скролл */
+        /* Скрываем стандартный скроллбар */
+        scrollbar-width: none; /* Для Firefox */
+        -ms-overflow-style: none; /* Для IE и Edge */
+        cursor: default; /* Стандартный курсор внутри карточки */
+    }
+    
+    /* Скрываем скроллбар для Chrome, Safari и Opera */
+    .card::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .card-overlay.active .card {
+        transform: scale(1);
+        opacity: 1;
+    }
+    
+    .card-header {
+        text-align: center;
+        margin-bottom: 15px;
+        position: relative;
+    }
+    
+    .card-title {
+        color: #ff6600;
+        font-size: 24px;
+        margin: 0;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-content {
+        color: #333;
+        font-size: 16px;
+        line-height: 1.6;
+        text-align: justify;
+    }
+    
+    /* Убираем кнопку закрытия */
+    .close-btn {
+        display: none;
+    }
+    
+    .card-decoration {
+        position: absolute;
+        width: 100%;
+        height: 15px;
+        background: linear-gradient(90deg, #ff9900, #ffcc00, #ff9900);
+        top: 0;
+        left: 0;
+        border-radius: 20px 20px 0 0;
+    }
+    
+    .confetti-icon {
+        position: absolute;
+        font-size: 24px;
+        color: #ff9900;
+        opacity: 0.7;
+    }
+    
+    .confetti-icon:nth-child(1) {
+        top: 20px;
+        left: 20px;
+    }
+    
+    .confetti-icon:nth-child(2) {
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .confetti-icon:nth-child(3) {
+        top: 50%;
+        left: 30px;
+    }
+    
+    .confetti-icon:nth-child(4) {
+        bottom: 40px;
+        right: 40px;
+    }
+    
+    .card-content ul {
+        text-align: left;
+        margin: 15px 0;
+        padding-left: 20px;
+    }
+    
+    .card-content li {
+        margin-bottom: 8px;
+    }
+    
+    .signature {
+        text-align: right;
+        margin-top: 20px;
+        font-style: italic;
+        color: #ff6600;
+        font-weight: bold;
+    }
+    
+    .message {
+        margin-bottom: 15px;
+    }
+    
+    .highlight {
+        color: #ff6600;
+        font-weight: bold;
+    }
+    
+    .wishes-list {
+        margin: 15px 0;
+        padding-left: 20px;
+    }
+    
+    .wishes-list li {
+        margin-bottom: 8px;
+        position: relative;
+    }
+    
+    .wishes-list li:before {
+        content: "★";
+        color: #ff9900;
+        position: absolute;
+        left: -20px;
+    }
+    
+    .heart {
+        color: #ff3366;
+        display: inline-block;
+        margin: 0 2px;
+    }
+    </style>
 </head>
 <body>
-  
-    <img src="pic/gg.png" id="gg">
-
+  <audio id="birthdayAudio" src="pic/au.wav" loop preload="auto" autoplay muted></audio>
+    
+    <img src="pic/lion.png" id="gg">
+    <button id="written"></button>
     <button id="posrcard"></button>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.js"></script>
+
+    <div id="congratulationOverlay" class="card-overlay">
+        <div class="card">
+            <div class="card-decoration"></div>
+         
+            <div class="confetti-icon">🥳</div>
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <h2 class="card-title">Поздравляю!</h2>
+                </div>
+                
+                <p class="message">
+                    Поздравляю! Вот и настал тот момент, когда ты перешагнула порог в 20 лет. Целых 20! С ума сойти, правда? Уже насчитала седые волосинки?
+                </p>
+                
+                <p class="message">
+                    Хотелось поздравить тебя с этим важным днём, пожелать «базовой базы» до кучи к другим поздравлениям, ещё раз поблагодарить и извиниться. В общем, сделать то, что делала уже не раз и не два.
+                </p>
+                
+                <p class="message">
+                    Очень не хочется своими словами и поздравлениями как-то напрягать. Надеюсь, что этого не произойдёт. Но если вдруг что — не утруждай себя чтением. В целом, я не жду ответа.
+                </p>
+                
+                <p class="message">
+                    <span class="highlight">А теперь пожелания:</span>
+                </p>
+                
+                <ul class="wishes-list">
+                    <li>Я желаю тебе счастья. Бесконечного, тихого, спокойного, а когда нужно — громкого и яркого.</li>
+                    <li>Желаю безмерного здоровья, поменьше больниц и поликлиник (по возможности).</li>
+                    <li>Желаю любви. Любви к семье, друзьям, ко всем близким и — что очень важно — к себе. Я знаю, что в тебе этой любви очень много.</li>
+                    <li>Желаю удачи. Удачи в начинаниях и завершениях, на работе, в учёбе, в делах семейных и общественных.</li>
+                    <li>Желаю успешно закончить учёбу. Сколько тебе осталось? Год? Два? Надеюсь, не больше. 🙏 Знаю, что справишься и без моих пожеланий, но всё же.</li>
+                    <li>Желаю побольше денег. Чтобы базовые потребности были закрыты и можно было думать о вещах второстепенных, но не менее важных.</li>
+                    <li>Побольше хороших людей вокруг. Больше понимания, принятия и заботы в твою сторону.</li>
+                    <li>Чтобы мечты быстрее превращались в цели, а цели — в реальность.</li>
+                    <li>Душевного равновесия...</li>
+                    <li>А, и побольше хорошего контента! Чтобы было что почитать или посмотреть на досуге. Очень надеюсь, что у тебя на это ещё остаётся свободное время.</li>
+                    <li>Больше вдохновения, мотивации, не забывать про важность дисциплины. Хотя что тут тебе говорить?</li>
+                </ul>
+                
+                <p class="message">
+                    Что ж — всего-всего тебе. Дорогая Лада. <span class="heart">🥳🥳🥳</span>
+                </p>
+                
+                <div class="signature">С наилучшими пожеланиями</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="writtenOverlay" class="card-overlay">
+        <div class="card">
+            <div class="card-decoration"></div>
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <h2 class="card-title">Спасибо</h2>
+                </div>
+                
+                <p class="message">
+                    Хочу сказать огромное спасибо. За всё. Ты сделала для меня безумно много. Чересчур много. Делала то, чего я явно не заслуживала. Тем не менее, это привело меня к тому, что есть сейчас.
+                </p>
+                
+                <p class="message">
+                    Всё ещё бесконечно благодарна за то, что ты столько времени была рядом. За слова, за поддержку, за разговоры. За наше интеллектуальное общение. За то, что было — ещё раз поблагодарю. За то, как это закончилось, тоже скажу спасибо. Относительно спокойно. По крайней мере, с твоей стороны. Я надеюсь, что у тебя всё сейчас хорошо. Ты большая умница. Работаешь, учишься — это какие-то сумасшедшие успевания. Очень хочется верить, что ты сама понимаешь, насколько же ты молодец.
+                </p>
+                
+                <p class="message">
+                    И мне всё ещё жаль, что так вышло. Думая о прошлом, я понимаю, что была глупым, перевозбуждённым лилипутом, который не мог контролировать ни поток своих чувств, ни слова, ни действия. И это не оправдания. Просто вот так. Не то чтобы сейчас я стала осознанной и просветлённой. Мало что изменилось, на самом-то деле. Но да, я явно стала чуть взрослее. Возможно, даже чуть умнее. И, как я уже говорила, ты сыграла далеко не последнюю роль в этом. И я очень надеюсь, что это яростный лилипут тебя не сильно задел.
+                </p>
+                
+                <p class="message">
+                    Я верю, что у тебя абсолютно всё получится. И хоть я не знаю твоей настоящей жизненной ситуации, хочется верить, что всё замечательно.
+                </p>
+                
+                <p class="message">
+                    Я думаю, ты меня очень многому научила. Не то чтобы до меня прям всё это окончательно дошло, но многие вещи стали яснее. Из каких-то примеров чётко помню наш диалог про детей. Ты сказала, что эта концепция в целом тебе близка — дарить любовь и заботу новому существу. До этого я никак не могла воспринимать идее родительства. Она была для меня слишком чужда. Но после я начал задумываться и поняла, что — да, это здорово. Безусловная любовь, новая жизнь, какое-то воспитание. Безумно сложно и, возможно, для меня недостижимо. Но я уже не так странно смотрю на молодых родителей. Ну, это так. Самый яркий для меня пример, почему-то. Насчёт смертной казни всё ещё того же мнения. Не переубедить дурочку.
+                </p>
+                
+                <p class="message">
+                    То время ощущается для меня каким-то особенным. Оно явно не было безоблачным или лёгким. Я помню, что мне местами было безумно плохо. Но вот в последнее время я периодически открывала наш чат и понимала — то время действительно особенное. То общение было особенным. Я <span class="highlight">БЛАГОДАРНА</span>, да-да, я всё ещё именно <span class="highlight">БЛАГОДАРНА</span>, что ты мне его подарила. Увы, я до сих пор не сделала что-то более материальное на твой праздник... Но уже как есть.
+                </p>
+                
+                <p class="message">
+                    Наша связь абсолютно не та. Её практически и нет, но я всё равно очень надеюсь ещё когда-нибудь встретиться на жизненном пути. Кто знает. Всё может быть.
+                </p>
+                
+                <p class="message">
+                    И опять же — я прекрасно понимаю, что мы вряд ли когда-нибудь хотя бы близко вернёмся к тому, что было. Я этого абсолютно не требую, не подумай. Я бы просто была рада знать, что у тебя всё хорошо. И я всегда рада твоему сообщению, какой-то коммуникации; уже даже встречи не так пугают. Так что если вдруг что — я всегда здесь. Но это ни к чему не обязывает, ты знаешь.
+                </p>
+                
+                <p class="message">
+                    Ещё раз с днём рождения! Спасибо, что ты есть.
+                </p>
+                
+                <p class="message">
+                    Ведь ты — одно из немногих доказательств того, что «дайвинчик» не такая уж помойка. <span class="heart">❤️</span>
+                </p>
+                
+                <div class="signature">С наилучшими пожеланиями, Алинка в попе глинка</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Получаем элементы
+    const writtenBtn = document.getElementById('written');
+    const posrcardBtn = document.getElementById('posrcard');
+    const congratulationOverlay = document.getElementById('congratulationOverlay');
+    const writtenOverlay = document.getElementById('writtenOverlay');
+    
+    // Функция для открытия overlay
+    function openOverlay(overlay) {
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Блокируем скролл фона
+    }
+    
+    // Функция для закрытия overlay
+    function closeOverlay(overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = ''; // Восстанавливаем скролл фона
+    }
+    
+    // Обработчики для кнопок
+    writtenBtn.addEventListener('click', () => openOverlay(writtenOverlay));
+    posrcardBtn.addEventListener('click', () => openOverlay(congratulationOverlay));
+    
+    // Закрытие по клику на затемненную область
+    congratulationOverlay.addEventListener('click', (e) => {
+        if (e.target === congratulationOverlay) {
+            closeOverlay(congratulationOverlay);
+        }
+    });
+    
+    writtenOverlay.addEventListener('click', (e) => {
+        if (e.target === writtenOverlay) {
+            closeOverlay(writtenOverlay);
+        }
+    });
+    
+    // Закрытие по клавише Esc
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (congratulationOverlay.classList.contains('active')) {
+                closeOverlay(congratulationOverlay);
+            }
+            if (writtenOverlay.classList.contains('active')) {
+                closeOverlay(writtenOverlay);
+            }
+        }
+    });
+    </script>
+</body>
+</html>
     <div id="confetti"></div>   
-    <script src="js.js"></script>
+    
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.js"></script>
+    <script>
+// Замените ваш текущий аудио-код на этот
+document.addEventListener('DOMContentLoaded', function() {
+    const audio = document.getElementById('birthdayAudio');
+    
+    // Включаем звук только после клика пользователя
+    document.body.addEventListener('click', function playOnClick() {
+        audio.muted = false;
+        audio.play().catch(e => console.log('Аудио не может быть воспроизведено:', e));
+        
+        // Удаляем обработчик после первого клика
+        document.body.removeEventListener('click', playOnClick);
+    }, { once: true });
+    
+    // Также воспроизводим при клике на кнопки
+    document.getElementById('written').addEventListener('click', function() {
+        if (audio.paused) {
+            audio.muted = false;
+            audio.play();
+        }
+    });
+    
+    document.getElementById('posrcard').addEventListener('click', function() {
+        if (audio.paused) {
+            audio.muted = false;
+            audio.play();
+        }
+    });
+});
+
+    // Остальной ваш JavaScript код...
+    $(document).ready(function() {
+        // Ваш существующий код для открыток и конфетти...
+        
+        // Показать открытку с поздравлением
+        $('#posrcard').click(function(e) {
+            e.stopPropagation();
+            $('#congratulationOverlay').addClass('active');
+            document.body.classList.add('light-effect');
+        });
+        
+        // Показать открытку с надписью
+        $('#written').click(function(e) {
+            e.stopPropagation();
+            $('#writtenOverlay').addClass('active');
+            document.body.classList.add('light-effect');
+        });
+        
+        // Закрыть открытку при клике вне её области
+        $('.card-overlay').click(function(e) {
+            if ($(e.target).hasClass('card-overlay')) {
+                $(this).removeClass('active');
+                document.body.classList.remove('light-effect');
+            }
+        });
+        
+        // Закрыть открытку при нажатии Escape
+        $(document).keyup(function(e) {
+            if (e.key === "Escape") {
+                $('.card-overlay').removeClass('active');
+                document.body.classList.remove('light-effect');
+            }
+        });
+        
+        // Код конфетти (оставлен без изменений)
+        var frameRate = 30;
+        var dt = 1.0 / frameRate;
+        var DEG_TO_RAD = Math.PI / 180;
+        var RAD_TO_DEG = 180 / Math.PI;
+        var colors = [
+            ["#df0049", "#660671"],
+            ["#00e857", "#005291"],
+            ["#2bebbc", "#05798a"],
+            ["#ffd200", "#b06c00"]
+        ];
+
+        function Vector2(_x, _y) {
+            this.x = _x, this.y = _y;
+            this.Length = function() {
+                return Math.sqrt(this.SqrLength());
+            }
+            this.SqrLength = function() {
+                return this.x * this.x + this.y * this.y;
+            }
+            this.Equals = function(_vec0, _vec1) {
+                return _vec0.x == _vec1.x && _vec0.y == _vec1.y;
+            }
+            this.Add = function(_vec) {
+                this.x += _vec.x;
+                this.y += _vec.y;
+            }
+            this.Sub = function(_vec) {
+                this.x -= _vec.x;
+                this.y -= _vec.y;
+            }
+            this.Div = function(_f) {
+                this.x /= _f;
+                this.y /= _f;
+            }
+            this.Mul = function(_f) {
+                this.x *= _f;
+                this.y *= _f;
+            }
+            this.Normalize = function() {
+                var sqrLen = this.SqrLength();
+                if (sqrLen != 0) {
+                    var factor = 1.0 / Math.sqrt(sqrLen);
+                    this.x *= factor;
+                    this.y *= factor;
+                }
+            }
+            this.Normalized = function() {
+                var sqrLen = this.SqrLength();
+                if (sqrLen != 0) {
+                    var factor = 1.0 / Math.sqrt(sqrLen);
+                    return new Vector2(this.x * factor, this.y * factor);
+                }
+                return new Vector2(0, 0);
+            }
+        }
+        Vector2.Lerp = function(_vec0, _vec1, _t) {
+            return new Vector2((_vec1.x - _vec0.x) * _t + _vec0.x, (_vec1.y - _vec0.y) * _t + _vec0.y);
+        }
+        Vector2.Distance = function(_vec0, _vec1) {
+            return Math.sqrt(Vector2.SqrDistance(_vec0, _vec1));
+        }
+        Vector2.SqrDistance = function(_vec0, _vec1) {
+            var x = _vec0.x - _vec1.x;
+            var y = _vec0.y - _vec1.y;
+            return (x * x + y * y + z * z);
+        }
+        Vector2.Scale = function(_vec0, _vec1) {
+            return new Vector2(_vec0.x * _vec1.x, _vec0.y * _vec1.y);
+        }
+        Vector2.Min = function(_vec0, _vec1) {
+            return new Vector2(Math.min(_vec0.x, _vec1.x), Math.min(_vec0.y, _vec1.y));
+        }
+        Vector2.Max = function(_vec0, _vec1) {
+            return new Vector2(Math.max(_vec0.x, _vec1.x), Math.max(_vec0.y, _vec1.y));
+        }
+        Vector2.ClampMagnitude = function(_vec0, _len) {
+            var vecNorm = _vec0.Normalized;
+            return new Vector2(vecNorm.x * _len, vecNorm.y * _len);
+        }
+        Vector2.Sub = function(_vec0, _vec1) {
+            return new Vector2(_vec0.x - _vec1.x, _vec0.y - _vec1.y, _vec0.z - _vec1.z);
+        }
+
+        function EulerMass(_x, _y, _mass, _drag) {
+            this.position = new Vector2(_x, _y);
+            this.mass = _mass;
+            this.drag = _drag;
+            this.force = new Vector2(0, 0);
+            this.velocity = new Vector2(0, 0);
+            this.AddForce = function(_f) {
+                this.force.Add(_f);
+            }
+            this.Integrate = function(_dt) {
+                var acc = this.CurrentForce(this.position);
+                acc.Div(this.mass);
+                var posDelta = new Vector2(this.velocity.x, this.velocity.y);
+                posDelta.Mul(_dt);
+                this.position.Add(posDelta);
+                acc.Mul(_dt);
+                this.velocity.Add(acc);
+                this.force = new Vector2(0, 0);
+            }
+            this.CurrentForce = function(_pos, _vel) {
+                var totalForce = new Vector2(this.force.x, this.force.y);
+                var speed = this.velocity.Length();
+                var dragVel = new Vector2(this.velocity.x, this.velocity.y);
+                dragVel.Mul(this.drag * this.mass * speed);
+                totalForce.Sub(dragVel);
+                return totalForce;
+            }
+        }
+
+        function ConfettiPaper(_x, _y) {
+            this.pos = new Vector2(_x, _y);
+            this.rotationSpeed = Math.random() * 600 + 800;
+            this.angle = DEG_TO_RAD * Math.random() * 360;
+            this.rotation = DEG_TO_RAD * Math.random() * 360;
+            this.cosA = 1.0;
+            this.size = 5.0;
+            this.oscillationSpeed = Math.random() * 1.5 + 0.5;
+            this.xSpeed = 40.0;
+            this.ySpeed = Math.random() * 60 + 50.0;
+            this.corners = new Array();
+            this.time = Math.random();
+            var ci = Math.round(Math.random() * (colors.length - 1));
+            this.frontColor = colors[ci][0];
+            this.backColor = colors[ci][1];
+            for (var i = 0; i < 4; i++) {
+                var dx = Math.cos(this.angle + DEG_TO_RAD * (i * 90 + 45));
+                var dy = Math.sin(this.angle + DEG_TO_RAD * (i * 90 + 45));
+                this.corners[i] = new Vector2(dx, dy);
+            }
+            this.Update = function(_dt) {
+                this.time += _dt;
+                this.rotation += this.rotationSpeed * _dt;
+                this.cosA = Math.cos(DEG_TO_RAD * this.rotation);
+                this.pos.x += Math.cos(this.time * this.oscillationSpeed) * this.xSpeed * _dt
+                this.pos.y += this.ySpeed * _dt;
+                if (this.pos.y > ConfettiPaper.bounds.y) {
+                    this.pos.x = Math.random() * ConfettiPaper.bounds.x;
+                    this.pos.y = 0;
+                }
+            }
+            this.Draw = function(_g) {
+                if (this.cosA > 0) {
+                    _g.fillStyle = this.frontColor;
+                } else {
+                    _g.fillStyle = this.backColor;
+                }
+                _g.beginPath();
+                _g.moveTo(this.pos.x + this.corners[0].x * this.size, this.pos.y + this.corners[0].y * this.size * this.cosA);
+                for (var i = 1; i < 4; i++) {
+                    _g.lineTo(this.pos.x + this.corners[i].x * this.size, this.pos.y + this.corners[i].y * this.size * this.cosA);
+                }
+                _g.closePath();
+                _g.fill();
+            }
+        }
+        ConfettiPaper.bounds = new Vector2(0, 0);
+
+        function ConfettiRibbon(_x, _y, _count, _dist, _thickness, _angle, _mass, _drag) {
+            this.particleDist = _dist;
+            this.particleCount = _count;
+            this.particleMass = _mass;
+            this.particleDrag = _drag;
+            this.particles = new Array();
+            var ci = Math.round(Math.random() * (colors.length - 1));
+            this.frontColor = colors[ci][0];
+            this.backColor = colors[ci][1];
+            this.xOff = Math.cos(DEG_TO_RAD * _angle) * _thickness;
+            this.yOff = Math.sin(DEG_TO_RAD * _angle) * _thickness;
+            this.position = new Vector2(_x, _y);
+            this.prevPosition = new Vector2(_x, _y);
+            this.velocityInherit = Math.random() * 2 + 4;
+            this.time = Math.random() * 100;
+            this.oscillationSpeed = Math.random() * 2 + 2;
+            this.oscillationDistance = Math.random() * 40 + 40;
+            this.ySpeed = Math.random() * 40 + 80;
+            for (var i = 0; i < this.particleCount; i++) {
+                this.particles[i] = new EulerMass(_x, _y - i * this.particleDist, this.particleMass, this.particleDrag);
+            }
+            this.Update = function(_dt) {
+                var i = 0;
+                this.time += _dt * this.oscillationSpeed;
+                this.position.y += this.ySpeed * _dt;
+                this.position.x += Math.cos(this.time) * this.oscillationDistance * _dt;
+                this.particles[0].position = this.position;
+                var dX = this.prevPosition.x - this.position.x;
+                var dY = this.prevPosition.y - this.position.y;
+                var delta = Math.sqrt(dX * dX + dY * dY);
+                this.prevPosition = new Vector2(this.position.x, this.position.y);
+                for (i = 1; i < this.particleCount; i++) {
+                    var dirP = Vector2.Sub(this.particles[i - 1].position, this.particles[i].position);
+                    dirP.Normalize();
+                    dirP.Mul((delta / _dt) * this.velocityInherit);
+                    this.particles[i].AddForce(dirP);
+                }
+                for (i = 1; i < this.particleCount; i++) {
+                    this.particles[i].Integrate(_dt);
+                }
+                for (i = 1; i < this.particleCount; i++) {
+                    var rp2 = new Vector2(this.particles[i].position.x, this.particles[i].position.y);
+                    rp2.Sub(this.particles[i - 1].position);
+                    rp2.Normalize();
+                    rp2.Mul(this.particleDist);
+                    rp2.Add(this.particles[i - 1].position);
+                    this.particles[i].position = rp2;
+                }
+                if (this.position.y > ConfettiRibbon.bounds.y + this.particleDist * this.particleCount) {
+                    this.Reset();
+                }
+            }
+            this.Reset = function() {
+                this.position.y = -Math.random() * ConfettiRibbon.bounds.y;
+                this.position.x = Math.random() * ConfettiRibbon.bounds.x;
+                this.prevPosition = new Vector2(this.position.x, this.position.y);
+                this.velocityInherit = Math.random() * 2 + 4;
+                this.time = Math.random() * 100;
+                this.oscillationSpeed = Math.random() * 2.0 + 1.5;
+                this.oscillationDistance = Math.random() * 40 + 40;
+                this.ySpeed = Math.random() * 40 + 80;
+                var ci = Math.round(Math.random() * (colors.length - 1));
+                this.frontColor = colors[ci][0];
+                this.backColor = colors[ci][1];
+                this.particles = new Array();
+                for (var i = 0; i < this.particleCount; i++) {
+                    this.particles[i] = new EulerMass(this.position.x, this.position.y - i * this.particleDist, this.particleMass, this.particleDrag);
+                }
+            }
+            this.Draw = function(_g) {
+                for (var i = 0; i < this.particleCount - 1; i++) {
+                    var p0 = new Vector2(this.particles[i].position.x + this.xOff, this.particles[i].position.y + this.yOff);
+                    var p1 = new Vector2(this.particles[i + 1].position.x + this.xOff, this.particles[i + 1].position.y + this.yOff);
+                    if (this.Side(this.particles[i].position.x, this.particles[i].position.y, this.particles[i + 1].position.x, this.particles[i + 1].position.y, p1.x, p1.y) < 0) {
+                        _g.fillStyle = this.frontColor;
+                        _g.strokeStyle = this.frontColor;
+                    } else {
+                        _g.fillStyle = this.backColor;
+                        _g.strokeStyle = this.backColor;
+                    }
+                    if (i == 0) {
+                        _g.beginPath();
+                        _g.moveTo(this.particles[i].position.x, this.particles[i].position.y);
+                        _g.lineTo(this.particles[i + 1].position.x, this.particles[i + 1].position.y);
+                        _g.lineTo((this.particles[i + 1].position.x + p1.x) * 0.5, (this.particles[i + 1].position.y + p1.y) * 0.5);
+                        _g.closePath();
+                        _g.stroke();
+                        _g.fill();
+                        _g.beginPath();
+                        _g.moveTo(p1.x, p1.y);
+                        _g.lineTo(p0.x, p0.y);
+                        _g.lineTo((this.particles[i + 1].position.x + p1.x) * 0.5, (this.particles[i + 1].position.y + p1.y) * 0.5);
+                        _g.closePath();
+                        _g.stroke();
+                        _g.fill();
+                    } else if (i == this.particleCount - 2) {
+                        _g.beginPath();
+                        _g.moveTo(this.particles[i].position.x, this.particles[i].position.y);
+                        _g.lineTo(this.particles[i + 1].position.x, this.particles[i + 1].position.y);
+                        _g.lineTo((this.particles[i].position.x + p0.x) * 0.5, (this.particles[i].position.y + p0.y) * 0.5);
+                        _g.closePath();
+                        _g.stroke();
+                        _g.fill();
+                        _g.beginPath();
+                        _g.moveTo(p1.x, p1.y);
+                        _g.lineTo(p0.x, p0.y);
+                        var p0x = (this.particles[i].position.x + p0.x) * 0.5;
+                        var p0y = (this.particles[i].position.y + p0.y) * 0.5;
+                        _g.lineTo(p0x, p0y);
+                        _g.closePath();
+                        _g.stroke();
+                        _g.fill();
+                    } else {
+                        _g.beginPath();
+                        _g.moveTo(this.particles[i].position.x, this.particles[i].position.y);
+                        _g.lineTo(this.particles[i + 1].position.x, this.particles[i + 1].position.y);
+                        _g.lineTo(p1.x, p1.y);
+                        _g.lineTo(p0.x, p0.y);
+                        _g.closePath();
+                        _g.stroke();
+                        _g.fill();
+                    }
+                }
+            }
+            this.Side = function(x1, y1, x2, y2, x3, y3) {
+                return ((x1 - x2) * (y3 - y2) - (y1 - y2) * (x3 - x2));
+            }
+        }
+        ConfettiRibbon.bounds = new Vector2(0, 0);
+        confetti = {};
+        confetti.Context = function(parent) {
+            var i = 0;
+            var canvasParent = document.getElementById(parent);
+            var canvas = document.createElement('canvas');
+            canvas.width = canvasParent.offsetWidth;
+            canvas.height = canvasParent.offsetHeight;
+            canvasParent.appendChild(canvas);
+            var context = canvas.getContext('2d');
+            var interval = null;
+            var confettiRibbonCount = 7;
+            var rpCount = 30;
+            var rpDist = 8.0;
+            var rpThick = 8.0;
+            var confettiRibbons = new Array();
+            ConfettiRibbon.bounds = new Vector2(canvas.width, canvas.height);
+            for (i = 0; i < confettiRibbonCount; i++) {
+                confettiRibbons[i] = new ConfettiRibbon(Math.random() * canvas.width, -Math.random() * canvas.height * 2, rpCount, rpDist, rpThick, 45, 1, 0.05);
+            }
+            var confettiPaperCount = 25;
+            var confettiPapers = new Array();
+            ConfettiPaper.bounds = new Vector2(canvas.width, canvas.height);
+            for (i = 0; i < confettiPaperCount; i++) {
+                confettiPapers[i] = new ConfettiPaper(Math.random() * canvas.width, Math.random() * canvas.height);
+            }
+            this.resize = function() {
+                canvas.width = canvasParent.offsetWidth;
+                canvas.height = canvasParent.offsetHeight;
+                ConfettiPaper.bounds = new Vector2(canvas.width, canvas.height);
+                ConfettiRibbon.bounds = new Vector2(canvas.width, canvas.height);
+            }
+            this.start = function() {
+                this.stop()
+                var context = this
+                this.interval = setInterval(function() {
+                    confetti.update();
+                }, 1000.0 / frameRate)
+            }
+            this.stop = function() {
+                clearInterval(this.interval);
+            }
+            this.update = function() {
+                var i = 0;
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                for (i = 0; i < confettiPaperCount; i++) {
+                    confettiPapers[i].Update(dt);
+                    confettiPapers[i].Draw(context);
+                }
+                for (i = 0; i < confettiRibbonCount; i++) {
+                    confettiRibbons[i].Update(dt);
+                    confettiRibbons[i].Draw(context);
+                }
+            }
+        }
+        var confetti = new confetti.Context('confetti');
+        confetti.start();
+        $(window).resize(function() {
+            confetti.resize();
+        });
+    });// В функции openOverlay добавьте:
+function openOverlay(overlay) {
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    document.body.classList.add('light-effect'); // Добавьте эту строку
+}
+
+// В функции closeOverlay добавьте:
+function closeOverlay(overlay) {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    document.body.classList.remove('light-effect'); // Добавьте эту строку
+}
+
+    </script>
 </body>
 </html>
